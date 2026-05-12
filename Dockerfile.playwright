@@ -1,0 +1,15 @@
+FROM mcr.microsoft.com/playwright:v1.59.1-noble
+
+WORKDIR /home/pwuser/project
+
+COPY scripts/package.json scripts/package-lock.json ./
+
+RUN npm ci
+
+COPY scripts/ ./
+
+RUN npx playwright install
+
+EXPOSE 3000
+
+CMD ["node", "server.js"]
