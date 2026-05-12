@@ -51,10 +51,22 @@ const server = http.createServer(async (req, res) => {
 
                 test.on('close', (code) => {
                     console.log(`[${new Date().toISOString()}] Playwright process exited with code: ${code}`);
+                    
+                    let results = null;
+                    const match = output.match(/EXTRACTED_RESULTS:(\[[\s\S]*?\])\n/);
+                    if (match) {
+                        try {
+                            results = JSON.parse(match[1]);
+                        } catch (e) {
+                            console.error(`[${new Date().toISOString()}] Failed to parse extracted results: ${e.message}`);
+                        }
+                    }
+                    
                     res.writeHead(code === 0 ? 200 : 500, { 'Content-Type': 'application/json' });
                     res.end(JSON.stringify({ 
                         status: code === 0 ? 'success' : 'failed',
-                        output: output 
+                        output: output,
+                        results: results
                     }));
                 });
             } catch (error) {
