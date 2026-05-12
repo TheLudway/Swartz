@@ -8,6 +8,7 @@ playwright/.cache/
 playwright/.auth/
 auth.json
 screenshot.png
+*.html
 
 # Secrets
 Secrets/
