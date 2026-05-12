@@ -36,7 +36,24 @@ async def handle_query(update: Update, context: ContextTypes.DEFAULT_TYPE):
             logger.info(f"Received response from playwright server: status_code={response.status_code}")
             if response.status_code == 200:
                 logger.info(f"Search completed successfully for query: '{query}'")
-                await update.message.reply_text(f"✅ Search completed for: {query}")
+                
+                response_data = response.json()
+                results = response_data.get("results", [])
+                
+                if results:
+                    message = f"✅ Found {len(results)} results for: {query}\n\n"
+                    for i, torrent in enumerate(results, 1):
+                        title = torrent.get("title", "N/A").strip() if torrent.get("title") else "N/A"
+                        size = torrent.get("size", "N/A")
+                        seeds = torrent.get("seeds", "N/A")
+                        downloads = torrent.get("downloads", "N/A").strip() if torrent.get("downloads") else "N/A"
+                        
+                        message += f"{i}. {title}\n"
+                        message += f"   Size: {size.strip()} | Seeds: {seeds.strip()} | Downloads: {downloads.strip()}\n\n"
+                    
+                    await update.message.reply_text(message)
+                else:
+                    await update.message.reply_text(f"✅ Search completed for: {query}\nNo results found.")
             else:
                 logger.warning(f"Search failed for query '{query}': {response.text}")
                 await update.message.reply_text(f"❌ Search failed: {response.text}")
