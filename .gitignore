@@ -7,6 +7,7 @@ blob-report/
 playwright/.cache/
 playwright/.auth/
 auth.json
+screenshot.png
 
 # Secrets
 Secrets/
