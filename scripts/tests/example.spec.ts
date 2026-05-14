@@ -62,7 +62,7 @@ test('search from telegram input', async ({ page }) => {
         torrent_title: pageTitle
     });
     
-    const downloadPath = path.resolve(__dirname, '../../../downloads');
+    const downloadPath = path.resolve(__dirname, '../downloads');
 
     fs.mkdirSync(downloadPath, { recursive: true });
 
