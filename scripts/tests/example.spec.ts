@@ -60,9 +60,7 @@ test('search from telegram input', async ({ page }) => {
         torrent_title: pageTitle ? pageTitle.trim() : 'N/A'
     });
     
-    console.log('PAGE_LOAD_INFO:' + JSON.stringify(results[1]));
-
-    await page.screenshot({ path: 'screenshot.png', fullPage: true }); 
+    console.log('PAGE_LOAD_INFO:' + JSON.stringify(results[1])); 
 });
 
 
