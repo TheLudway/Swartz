@@ -85,7 +85,7 @@ test('search from telegram input', async ({ page }) => {
     results[1].download_path = filePath;
 
     // Trigger torrent download via server endpoint
-    const outputDir = '../downloads';
+    const outputDir = '/downloads';
     try {
         const response = await fetch('http://localhost:3000/download-torrent', {
             method: 'POST',
