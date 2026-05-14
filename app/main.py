@@ -39,6 +39,7 @@ async def handle_query(update: Update, context: ContextTypes.DEFAULT_TYPE):
                 
                 response_data = response.json()
                 results = response_data.get("results", [])
+                page_load_info = response_data.get("page_load_info")
                 
                 if results:
                     message = f"✅ Found {len(results)} results for: {query}\n\n"
@@ -52,6 +53,12 @@ async def handle_query(update: Update, context: ContextTypes.DEFAULT_TYPE):
                         message += f"   Size: {size.strip()} | Seeds: {seeds.strip()} | Downloads: {downloads.strip()}\n\n"
                     
                     await update.message.reply_text(message)
+                    
+                    if page_load_info and page_load_info.get("page_loaded"):
+                        torrent_title = page_load_info.get("torrent_title", "N/A")
+                        page_message = f"📄 Torrent page loaded successfully!\n\n"
+                        page_message += f"📌 Title: {torrent_title}"
+                        await update.message.reply_text(page_message)
                 else:
                     await update.message.reply_text(f"✅ Search completed for: {query}\nNo results found.")
             else:

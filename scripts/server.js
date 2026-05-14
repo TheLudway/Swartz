@@ -53,6 +53,7 @@ const server = http.createServer(async (req, res) => {
                     console.log(`[${new Date().toISOString()}] Playwright process exited with code: ${code}`);
                     
                     let results = null;
+                    let page_load_info = null;
                     const match = output.match(/EXTRACTED_RESULTS:(\[[\s\S]*?\])\n/);
                     if (match) {
                         try {
@@ -62,11 +63,21 @@ const server = http.createServer(async (req, res) => {
                         }
                     }
                     
+                    const pageLoadMatch = output.match(/PAGE_LOAD_INFO:(\{[\s\S]*?\})\n/);
+                    if (pageLoadMatch) {
+                        try {
+                            page_load_info = JSON.parse(pageLoadMatch[1]);
+                        } catch (e) {
+                            console.error(`[${new Date().toISOString()}] Failed to parse page load info: ${e.message}`);
+                        }
+                    }
+                    
                     res.writeHead(code === 0 ? 200 : 500, { 'Content-Type': 'application/json' });
                     res.end(JSON.stringify({ 
                         status: code === 0 ? 'success' : 'failed',
                         output: output,
-                        results: results
+                        results: results,
+                        page_load_info: page_load_info
                     }));
                 });
             } catch (error) {
