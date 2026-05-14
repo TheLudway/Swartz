@@ -52,12 +52,12 @@ test('search from telegram input', async ({ page }) => {
     await page.waitForSelector('h1[itemprop="name"]', { timeout: 10000 }).catch(() => null);
     
     // Extract page title
-    const pageTitle = await page.locator('h1[itemprop="name"]').textContent().catch(() => 'N/A');
+    const pageTitle = await page.title();
     
     // Add page load confirmation to results
     results.push({
         page_loaded: true,
-        torrent_title: pageTitle ? pageTitle.trim() : 'N/A'
+        torrent_title: pageTitle
     });
     
     console.log('PAGE_LOAD_INFO:' + JSON.stringify(results[1])); 
