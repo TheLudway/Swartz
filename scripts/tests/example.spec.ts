@@ -1,4 +1,6 @@
 import { test, expect } from '@playwright/test';
+import path from 'path';
+import fs from 'fs';
 
 const query = process.env.SEARCH_QUERY || '';
 
@@ -60,6 +62,12 @@ test('search from telegram input', async ({ page }) => {
         torrent_title: pageTitle
     });
     
+    const downloadLink = page.locator('a.dl-stub.dl-link.dl-topic');
+
+    const downloadPath = path.resolve(__dirname, 'downloads');
+
+    fs.mk
+
     console.log('PAGE_LOAD_INFO:' + JSON.stringify(results[1])); 
 });
 
