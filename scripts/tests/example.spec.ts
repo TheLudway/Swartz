@@ -41,7 +41,7 @@ test('search from telegram input', async ({ page }) => {
     }
     
     console.log('EXTRACTED_RESULTS:' + JSON.stringify(results));
-
+    console.log('rows: ' + rows);
 
 
     await page.screenshot({ path: 'screenshot.png', fullPage: true }); 
