@@ -56,8 +56,12 @@ async def handle_query(update: Update, context: ContextTypes.DEFAULT_TYPE):
                     
                     if page_load_info and page_load_info.get("page_loaded"):
                         torrent_title = page_load_info.get("torrent_title", "N/A")
+                        download_file = page_load_info.get("download_file", "N/A")
+                        download_path = page_load_info.get("download_path", "N/A")
                         page_message = f"📄 Torrent page loaded successfully!\n\n"
-                        page_message += f"📌 Title: {torrent_title}"
+                        page_message += f"📌 Title: {torrent_title}\n"
+                        page_message += f"⬇️ Download: {download_file}\n"
+                        page_message += f"📁 Location: {download_path}"
                         await update.message.reply_text(page_message)
                 else:
                     await update.message.reply_text(f"✅ Search completed for: {query}\nNo results found.")

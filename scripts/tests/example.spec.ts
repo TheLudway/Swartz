@@ -62,11 +62,27 @@ test('search from telegram input', async ({ page }) => {
         torrent_title: pageTitle
     });
     
+    const downloadPath = path.resolve(__dirname, '../../../downloads');
+
+    fs.mkdirSync(downloadPath, { recursive: true });
+
     const downloadLink = page.locator('a.dl-stub.dl-link.dl-topic');
 
-    const downloadPath = path.resolve(__dirname, 'downloads');
+    const [download] = await Promise.all([
+        page.waitForEvent('download'),
+        downloadLink.click(),
+    ]);
 
-    fs.mk
+    // save file to custom path
+    const suggestedFilename = await download.suggestedFilename();
+    const filePath = path.join(downloadPath, suggestedFilename);
+    await download.saveAs(filePath);
+
+    console.log('Downloaded to:', filePath);
+
+    // Add download info to page load info
+    results[1].download_file = suggestedFilename;
+    results[1].download_path = filePath;
 
     console.log('PAGE_LOAD_INFO:' + JSON.stringify(results[1])); 
 });

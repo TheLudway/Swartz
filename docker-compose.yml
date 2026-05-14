@@ -12,6 +12,7 @@ services:
       - ./scripts/tests:/home/pwuser/project/tests
       - ./scripts/playwright-report:/home/pwuser/project/playwright-report
       - ./scripts/auth.json:/home/pwuser/project/auth.json
+      - ./downloads:/home/pwuser/project/downloads
     networks:
       - swartz-network
 
@@ -26,6 +27,7 @@ services:
       - PW_TEST_CONNECT_WS_ENDPOINT=http://playwright:3000/
     volumes:
       - ./Secrets:/app/Secrets:ro
+      - ./downloads:/app/downloads:ro
     networks:
       - swartz-network
     restart: unless-stopped
