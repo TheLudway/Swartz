@@ -86,6 +86,57 @@ const server = http.createServer(async (req, res) => {
                 res.end(JSON.stringify({ error: error.message }));
             }
         });
+    } else if (req.method === 'POST' && req.url === '/download-torrent') {
+        let body = '';
+        
+        req.on('data', chunk => {
+            body += chunk.toString();
+        });
+
+        req.on('end', () => {
+            console.log(`[${new Date().toISOString()}] Torrent download request received: ${body}`);
+            try {
+                const data = JSON.parse(body);
+                const torrentPath = data.torrentPath;
+                const outputDir = data.outputDir || '/downloads';
+
+                if (!torrentPath) {
+                    console.warn(`[${new Date().toISOString()}] No torrentPath provided in request`);
+                    res.writeHead(400, { 'Content-Type': 'application/json' });
+                    res.end(JSON.stringify({ error: 'No torrentPath provided' }));
+                    return;
+                }
+
+                // Install aria2 and tmux if not present, then spawn download in tmux
+                const sessionName = `torrent-${Date.now()}`;
+                const installCmd = `apt-get update > /dev/null 2>&1 && apt-get install -y aria2 tmux > /dev/null 2>&1 && tmux new-session -d -s ${sessionName} "aria2c '${torrentPath}' -d '${outputDir}' && sleep 60"`;
+                
+                console.log(`[${new Date().toISOString()}] Spawning aria2c in tmux session: ${sessionName}`);
+                const download = spawn('bash', ['-c', installCmd], {
+                    stdio: 'pipe'
+                });
+
+                download.on('close', (code) => {
+                    console.log(`[${new Date().toISOString()}] Setup completed with code: ${code}`);
+                    res.writeHead(200, { 'Content-Type': 'application/json' });
+                    res.end(JSON.stringify({ 
+                        status: 'success',
+                        message: `Download started in tmux session: ${sessionName}`,
+                        sessionName: sessionName,
+                        torrentPath: torrentPath,
+                        outputDir: outputDir
+                    }));
+                });
+
+                download.stderr.on('data', (data) => {
+                    console.error(`[${new Date().toISOString()}] [ARIA2_STDERR] ${data.toString().trim()}`);
+                });
+            } catch (error) {
+                console.error(`[${new Date().toISOString()}] Error parsing torrent request: ${error.message}`);
+                res.writeHead(400, { 'Content-Type': 'application/json' });
+                res.end(JSON.stringify({ error: error.message }));
+            }
+        });
     } else {
         console.warn(`[${new Date().toISOString()}] Unhandled request: ${req.method} ${req.url}`);
         res.writeHead(404, { 'Content-Type': 'application/json' });

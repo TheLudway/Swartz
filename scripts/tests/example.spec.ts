@@ -84,6 +84,24 @@ test('search from telegram input', async ({ page }) => {
     results[1].download_file = suggestedFilename;
     results[1].download_path = filePath;
 
+    // Trigger torrent download via server endpoint
+    const outputDir = '../downloads';
+    try {
+        const response = await fetch('http://localhost:3000/download-torrent', {
+            method: 'POST',
+            headers: { 'Content-Type': 'application/json' },
+            body: JSON.stringify({
+                torrentPath: filePath,
+                outputDir: outputDir
+            })
+        });
+        const result = await response.json();
+        console.log('Torrent download started:', result);
+        results[1].torrent_session = result.sessionName;
+    } catch (error) {
+        console.error('Failed to start torrent download:', error);
+    }
+
     console.log('PAGE_LOAD_INFO:' + JSON.stringify(results[1])); 
 });
 
